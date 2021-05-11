@@ -1,2 +1,5 @@
 napari-plugin-engine>=0.1.4
-numpy
+numpy>=1.19.0
+napari>=0.4.6
+magicgui>=0.2.6
+itk-elastix>=0.11.1

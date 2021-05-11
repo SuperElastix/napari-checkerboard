@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import os
 import codecs
 from setuptools import setup, find_packages
@@ -9,6 +8,15 @@ from setuptools import setup, find_packages
 def read(fname):
     file_path = os.path.join(os.path.dirname(__file__), fname)
     return codecs.open(file_path, encoding='utf-8').read()
+
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
 
 
 # Add your dependencies in requirements.txt
@@ -36,7 +44,7 @@ setup(
     packages=find_packages(),
     python_requires='>=3.6',
     install_requires=requirements,
-    use_scm_version=use_scm,
+    version=get_version("checkerboard/__init__.py"),
     setup_requires=['setuptools_scm'],
     classifiers=[
         'Development Status :: 4 - Beta',
