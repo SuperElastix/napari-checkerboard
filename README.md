@@ -8,6 +8,10 @@
 
 Compare two images with the itk checkerboard filter
 
+
+<img width="1430" alt="Screenshot 2021-05-12 at 15 03 17" src="https://user-images.githubusercontent.com/33719474/117979519-48bd4680-b333-11eb-874c-d9ec09681d93.png">
+
+
 ----------------------------------
 
 This [napari] plugin was generated with [Cookiecutter] using with [@napari]'s [cookiecutter-napari-plugin] template.
