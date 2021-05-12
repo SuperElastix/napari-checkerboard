@@ -24,8 +24,14 @@ def error(message):
     return e
 
 
-@magic_factory(call_button="create checkerboard", pattern={"max": 20,
-               "step": 1})
+def on_init(widget):
+    widget.native.setStyleSheet("QWidget{font-size: 12pt;}")
+
+
+@magic_factory(widget_init=on_init, layout='vertical',
+               call_button="create checkerboard",
+               pattern={"max": 20, "step": 1,
+                        "tooltip": "Select the gridsize of the checkerboard"})
 def checkerboard(image1: "napari.types.ImageData",
                  image2: "napari.types.ImageData",
                  pattern: int = 3) -> 'napari.types.LayerDataTuple':
@@ -93,4 +99,4 @@ def checkerboard(image1: "napari.types.ImageData",
 @napari_hook_implementation
 def napari_experimental_provide_dock_widget():
     # you can return either a single widget, or a sequence of widgets
-    return checkerboard
+    return checkerboard, {'area': 'bottom'}
