@@ -1,30 +1,13 @@
-"""
-This module is an example of a barebones QWidget plugin for napari
-
-It implements the ``napari_experimental_provide_dock_widget`` hook
-specification.
-see: https://napari.org/docs/dev/plugins/hook_specifications.html
-
-Replace code below according to your needs.
-"""
 from napari_plugin_engine import napari_hook_implementation
 from magicgui import magic_factory
 import numpy as np
 import itk
-from qtpy.QtWidgets import QMessageBox
-
-
-def error(message):
-    e = QMessageBox()
-    label = QMessageBox()
-    e.setText(message)
-    e.setIcon(QMessageBox.Critical)
-    e.setWindowTitle("Error")
-    e.show()
-    return e
-
+import checkerboard.utils as utils
 
 def on_init(widget):
+    """
+    Initializes widget layout.
+    """
     widget.native.setStyleSheet("QWidget{font-size: 12pt;}")
 
 
@@ -35,6 +18,9 @@ def on_init(widget):
 def checkerboard(image1: "napari.types.ImageData",
                  image2: "napari.types.ImageData",
                  pattern: int = 3) -> 'napari.types.LayerDataTuple':
+    """
+    Takes user input images and returns a checkerboard blend of the images.
+    """
     if image1 is None or image2 is None:
         print("No images selected for registration.")
         return error("No images selected for registration.")
