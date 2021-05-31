@@ -3,6 +3,9 @@ from magicgui import magic_factory
 import numpy as np
 import itk
 import checkerboard.utils as utils
+from itk_napari_conversion import image_from_image_layer
+from itk_napari_conversion import image_layer_from_image
+
 
 def on_init(widget):
     """
@@ -15,9 +18,9 @@ def on_init(widget):
                call_button="create checkerboard",
                pattern={"max": 20, "step": 1,
                         "tooltip": "Select the gridsize of the checkerboard"})
-def checkerboard(image1: "napari.types.ImageData",
-                 image2: "napari.types.ImageData",
-                 pattern: int = 3) -> 'napari.types.LayerDataTuple':
+def checkerboard(image1: "napari.layers.Image",
+                 image2: "napari.layers.Image",
+                 pattern: int = 3) -> 'napari.layers.Image':
     """
     Takes user input images and returns a checkerboard blend of the images.
     """
@@ -25,13 +28,11 @@ def checkerboard(image1: "napari.types.ImageData",
         print("No images selected for registration.")
         return error("No images selected for registration.")
 
-    image1 = np.asarray(image1).astype(np.float32)
-    image2 = np.asarray(image2).astype(np.float32)
-
-    itk_image1 = itk.GetImageFromArray(image1)
-    itk_image2 = itk.GetImageFromArray(image2)
-    input1 = itk_image1
-    input2 = itk_image2
+    # Convert image layer to itk_image
+    itk_image1 = image_from_image_layer(image1)
+    itk_image2 = image_from_image_layer(image2)
+    itk_image1 = itk_image1.astype(itk.F)
+    itk_image2 = itk_image2.astype(itk.F)
 
     region_image1 = itk_image1.GetLargestPossibleRegion()
     region_image2 = itk_image2.GetLargestPossibleRegion()
@@ -70,6 +71,9 @@ def checkerboard(image1: "napari.types.ImageData",
             resampler.SetReferenceImage(itk_image2)
             resampler.Update()
             input1 = resampler.GetOutput()
+    else:
+        input1 = itk_image1
+        input2 = itk_image2
 
     checkerboard_filter = itk.CheckerBoardImageFilter.New(input1, input2)
 
@@ -79,7 +83,9 @@ def checkerboard(image1: "napari.types.ImageData",
     checkerboard_filter.Update()
     checkerboard = checkerboard_filter.GetOutput()
 
-    return np.asarray(checkerboard).astype(np.float32), {'name': 'checkerboard'}
+    layer = image_layer_from_image(checkerboard)
+    layer.name = "checkerboard " + image1.name + " " + image2.name
+    return layer
 
 
 @napari_hook_implementation
